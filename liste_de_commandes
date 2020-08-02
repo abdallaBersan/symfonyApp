@@ -1,0 +1,28 @@
+php -S localhost:8000 -t public/
+
+*------------------------------------------------------------------*
+//creation du projet
+composer create-project symfony/website-skeleton nomDuProjet
+
+//
+composer require server --dev
+
+php bin/console server:run
+
+*------------------------------------------------------------------*
+Tout d'abord modifier le fichier .env ( root, nom de la bdd)
+php bin/console doctrine:database:create
+
+//creer une entite
+1. php bin/console make:entity
+
+2. php bin/console make:migration
+
+3. php bin/console doctrine:migrations:migrate
+
+php bin/console doctrine:schema:update --force
+
+*-----------------creation des fausses donnees--------------------*
+composer require orm-fixtures --dev
+
+php bin/console make:fixtures
