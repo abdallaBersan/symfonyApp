@@ -5,7 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Category;
 use App\Entity\Post;
 use App\Form\PostType;
-use App\Service\FileManagerServiceInterface;
+use App\Services\FileManagerServiceInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,13 +35,18 @@ class AdminPostController extends AdminBaseController
      * @param FileManagerServiceInterface $fileManagerService
      * @return RedirectResponse|Response
      */
-    public function create(Request $request)
+    public function create(Request $request, FileManagerServiceInterface $fileManagerService)
     {
         $em = $this->getDoctrine()->getManager();
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
+            $image = $form->get('image')->getData();
+            if($image){
+                $fileName = $fileManagerService->imagePostUpload($image);
+                $post->setImage($fileName);
+            }
             $post->setCreateAtValue();
             $post->setUpdateAtValue();
             $post->setIsPublished();
@@ -82,7 +87,7 @@ class AdminPostController extends AdminBaseController
                     $post->setImage($fileName);
                 }
                 $post->setUpdateAtValue();
-                $this->addFlash('success', 'Publication moddifiée');
+                $this->addFlash('success', 'Publication modifiée');
             }
             if ($form->get('delete')->isClicked()){
                 $image = $post->getImage();
